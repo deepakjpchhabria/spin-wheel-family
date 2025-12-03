@@ -14,19 +14,6 @@
       justify-content: center;
       min-height: 100vh;
       background-color: #f7f7f7;
-      position: relative;
-    }
-
-    #counter {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 20px;
-      font-weight: bold;
-      background-color: #007BFF;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
     }
 
     #i {
@@ -69,7 +56,6 @@
   </style>
 </head>
 <body>
-  <div id="counter">1/10</div>
   <div id="r"></div>
   <input id="i" placeholder="Guess Bollywood movie">
   <button onclick="c()">Guess</button>
@@ -84,105 +70,106 @@
       ["🏠👨‍👩‍👧‍👦😢😊", "Kabhi Khushi Kabhie Gham"],
       ["🚆👧🧳💬", "Jab We Met"],
       ["💃🚂🔥🎶❤️", "Dil Se"],
-      ["🏏🇮🇳👨‍👾", "Lagaan"],
+      ["🏏🇮🇳👨‍🌾", "Lagaan"],
       ["👮‍♂️🔥💪", "Singham"],
-      ["🎸🎤🎶", "Rockstar"
+      ["🎸🎤🎶", "Rockstar"]
     ];
 
     let cur;
+    function clean(s){
+      return (s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+    }
+    const alias = {
+      "Dilwale Dulhania Le Jayenge": ["ddlj","ddl","dilwale","dulhania","raj simran"],
+      "Kabhi Khushi Kabhie Gham": ["k3g","kabhi khushi","khushi gham"],
+      "Jab We Met": ["jwm","jab we","geet"],
+      "Ae Dil Hai Mushkil": ["adhm","ae dil","dil mushkil"],
+      "Lagaan": ["lagan","amir lagaan","cricket"],
+      "Singham": ["singam","ajay singham"],
+      "Rockstar": ["rock star","ranbir rockstar"],
+      "Hum Aapke Hain Koun": ["hahk","hum aapke","aapke hain koun"],
+      "Dil Se": ["dilse"],
+      "Veer Zaara": ["veerzara","veer","zaara"]
+    };
+    
     let currentIndex = 0; // Track the current index
-    let shuffledList = [...L]; // Copy the movie list
+let shuffledList = [...L]; // Copy the movie list
 
-    // Function to shuffle the array (Fisher-Yates shuffle)
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
+// Function to shuffle the array (Fisher-Yates shuffle)
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
-    // Shuffle the movie list initially
+// Shuffle the movie list initially
+shuffle(shuffledList);
+
+function n() {
+  if (currentIndex >= shuffledList.length) {
+    // If all movies have been used, reshuffle and restart
     shuffle(shuffledList);
+    currentIndex = 0;
+  }
 
-    function updateCounter() {
-      document.getElementById('counter').innerText = `${currentIndex + 1}/${shuffledList.length}`;
-    }
+  // Set the current movie
+  cur = shuffledList[currentIndex];
+  currentIndex++; // Move to the next index
 
-    function n() {
-      if (currentIndex >= shuffledList.length) {
-        // If all movies have been used, reshuffle and restart
-        shuffle(shuffledList);
-        currentIndex = 0;
-      }
+  // Update the display
+  let ex = document.getElementById('e');
+  ex && ex.remove();
 
-      // Set the current movie
-      cur = shuffledList[currentIndex];
-      currentIndex++; // Move to the next index
-
-      updateCounter(); // Update the counter on top-right
-
-      // Update the display
-      let ex = document.getElementById('e');
-      ex && ex.remove();
-
-      const emojiDiv = document.createElement('div');
-      emojiDiv.id = 'e';
-      emojiDiv.innerText = cur[0];
-      emojiDiv.style = 'font-size:36px;text-align:center;margin:20px 0';
-      document.body.insertBefore(emojiDiv, r);
-      r.innerText = '';
-      i.value = '';
-    }
-
-    n(); // Start the first question
-
-    function clean(s) {
-      return (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    }
-
-    function c() {
-      // Blur the input field to close the keyboard on iOS
-      i.blur();
-
-      let a = clean(i.value);
-      let b = clean(cur[1]);
-
-      if (!a) {
-        r.innerText = "Type a guess!";
-        return;
-      }
-
-      let ok = false;
-
-      // 1) Direct partial match
-      if (b.includes(a)) ok = true;
-
-      // 2) Alias match
-      if (!ok && alias[cur[1]]) {
-        ok = alias[cur[1]].some(x => clean(x).includes(a) || a.includes(clean(x)));
-      }
-
-      // 3) Fuzzy spelling match (distance ≤ 3)
-      if (!ok && distance(a, b) <= 3) ok = true;
-
-      r.innerText = ok ? ("Correct! 🎉 " + cur[1]) : "Try again!";
-    }
-
-    function distance(a, b) {
-      a = [...a]; b = [...b];
-      const dp = [...Array(a.length + 1)].map(() => Array(b.length + 1).fill(0));
-      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
-      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
-      for (let i = 1; i <= a.length; i++)
-        for (let j = 1; j <= b.length; j++)
-          dp[i][j] = Math.min(
-            dp[i - 1][j] + 1,
-            dp[i][j - 1] + 1,
-            dp[i - 1][j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1)
+  const emojiDiv = document.createElement('div');
+  emojiDiv.id = 'e';
+  emojiDiv.innerText = cur[0];
+  emojiDiv.style = 'font-size:36px;text-align:center;margin:20px 0';
+  document.body.insertBefore(emojiDiv, r);
+  r.innerText = '';
+  i.value = '';
+}
+    
+    n();
+    function distance(a,b){
+      a=[...a]; b=[...b];
+      const dp=[...Array(a.length+1)].map(()=>Array(b.length+1).fill(0));
+      for(let i=0;i<=a.length;i++) dp[i][0]=i;
+      for(let j=0;j<=b.length;j++) dp[0][j]=j;
+      for(let i=1;i<=a.length;i++)
+        for(let j=1;j<=b.length;j++)
+          dp[i][j]=Math.min(
+            dp[i-1][j]+1,
+            dp[i][j-1]+1,
+            dp[i-1][j-1]+(a[i-1]==b[j-1]?0:1)
           );
       return dp[a.length][b.length];
     }
-
+    function c(){
+      
+      // Blur the input field to close the keyboard on iOS
+      i.blur();
+      
+      let a = clean(i.value);
+      let b = clean(cur[1]);
+    
+      if(!a){ r.innerText = "Type a guess!"; return; }
+    
+      let ok = false;
+    
+      // 1) Direct partial match
+      if(b.includes(a)) ok = true;
+    
+      // 2) Alias match
+      if(!ok && alias[cur[1]]) {
+        ok = alias[cur[1]].some(x => clean(x).includes(a) || a.includes(clean(x)));
+      }
+    
+      // 3) Fuzzy spelling match (distance ≤ 3)
+      if(!ok && distance(a,b) <= 3) ok = true;
+    
+      r.innerText = ok ? ("Correct! 🎉 " + cur[1]) : "Try again!";
+    }
   </script>
 </body>
 </html>
