@@ -1,29 +1,100 @@
-<input id=i placeholder="Guess Bollywood movie"><button onclick="c()">Guess</button><button onclick="n()">New</button><div id=r></div>
-<script>
-const L=[
- ["👫🇮🇳🌾🚂","Dilwale Dulhania Le Jayenge"],
- ["👰🤵💃🎉","Hum Aapke Hain Koun"],
- ["💔🎶🎤","Ae Dil Hai Mushkil"],
- ["✈️🌾❤️🕊️","Veer Zaara"],
- ["🏠👨‍👩‍👧‍👦😢😊","Kabhi Khushi Kabhie Gham"],
- ["🚆👧🧳💬","Jab We Met"],
- ["💃🔥🎶❤️","Dil Se"],
- ["🏏🇮🇳👨‍🌾","Lagaan"],
- ["👮‍♂️🔥💪","Singham"],
- ["🎸🎤🎶","Rockstar"]
-];
-let cur;
-function clean(s){return (s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
-function n(){
-  cur=L[Math.floor(Math.random()*L.length)];
-  let ex=document.getElementById('e'); ex&&ex.remove();
-  document.body.insertBefore(Object.assign(document.createElement('div'),{id:'e',innerText:cur[0],style:'font-size:36px;text-align:center;margin:10px'}),r);
-  r.innerText=''; i.value='';
-}
-n();
-function c(){
-  let a=clean(i.value), b=clean(cur[1]);
-  if(!a){ r.innerText='Type a guess!'; return; }
-  r.innerText = b.includes(a) ? ("Correct! 🎉 " + cur[1]) : "Try again!";
-}
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Style to make the app mobile-friendly */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f7f7f7;
+    }
+
+    #i {
+      width: 90%;
+      max-width: 400px;
+      padding: 10px;
+      font-size: 18px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:active {
+      background-color: #0056b3;
+    }
+
+    #r {
+      margin-top: 20px;
+      font-size: 22px;
+      text-align: center;
+      color: #333;
+    }
+
+    #e {
+      font-size: 28px;
+      text-align: center;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <input id="i" placeholder="Guess Bollywood movie">
+  <button onclick="c()">Guess</button>
+  <button onclick="n()">New</button>
+  <div id="r"></div>
+
+  <script>
+    const L = [
+      ["👫🇮🇳🌾🚂", "Dilwale Dulhania Le Jayenge"],
+      ["👰🤵💃🎉", "Hum Aapke Hain Koun"],
+      ["💔🎶🎤", "Ae Dil Hai Mushkil"],
+      ["✈️🌾❤️🕊️", "Veer Zaara"],
+      ["🏠👨‍👩‍👧‍👦😢😊", "Kabhi Khushi Kabhie Gham"],
+      ["🚆👧🧳💬", "Jab We Met"],
+      ["💃🔥🎶❤️", "Dil Se"],
+      ["🏏🇮🇳👨‍🌾", "Lagaan"],
+      ["👮‍♂️🔥💪", "Singham"],
+      ["🎸🎤🎶", "Rockstar"]
+    ];
+
+    let cur;
+    function clean(s) { return (s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+    function n() {
+      cur = L[Math.floor(Math.random() * L.length)];
+      let ex = document.getElementById('e');
+      ex && ex.remove();
+      const emojiDiv = document.createElement('div');
+      emojiDiv.id = 'e';
+      emojiDiv.innerText = cur[0];
+      emojiDiv.style = 'font-size:36px;text-align:center;margin:20px 0';
+      document.body.insertBefore(emojiDiv, r);
+      r.innerText = '';
+      i.value = '';
+    }
+    n();
+    function c() {
+      let a = clean(i.value), b = clean(cur[1]);
+      if (!a) { r.innerText = 'Type a guess!'; return; }
+      r.innerText = b.includes(a) ? ("Correct! 🎉 " + cur[1]) : "Try again!";
+    }
+  </script>
+</body>
+</html>
