@@ -1,0 +1,29 @@
+<input id=i placeholder="Guess Bollywood movie"><button onclick="c()">Guess</button><button onclick="n()">New</button><div id=r></div>
+<script>
+const L=[
+ ["👫🇮🇳🌾🚂","Dilwale Dulhania Le Jayenge"],
+ ["👰🤵💃🎉","Hum Aapke Hain Koun"],
+ ["💔🎶🎤","Ae Dil Hai Mushkil"],
+ ["✈️🌾❤️🕊️","Veer Zaara"],
+ ["🏠👨‍👩‍👧‍👦😢😊","Kabhi Khushi Kabhie Gham"],
+ ["🚆👧🧳💬","Jab We Met"],
+ ["💃🔥🎶❤️","Dil Se"],
+ ["🏏🇮🇳👨‍🌾","Lagaan"],
+ ["👮‍♂️🔥💪","Singham"],
+ ["🎸🎤🎶","Rockstar"]
+];
+let cur;
+function clean(s){return (s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+function n(){
+  cur=L[Math.floor(Math.random()*L.length)];
+  let ex=document.getElementById('e'); ex&&ex.remove();
+  document.body.insertBefore(Object.assign(document.createElement('div'),{id:'e',innerText:cur[0],style:'font-size:36px;text-align:center;margin:10px'}),r);
+  r.innerText=''; i.value='';
+}
+n();
+function c(){
+  let a=clean(i.value), b=clean(cur[1]);
+  if(!a){ r.innerText='Type a guess!'; return; }
+  r.innerText = b.includes(a) ? ("Correct! 🎉 " + cur[1]) : "Try again!";
+}
+</script>
