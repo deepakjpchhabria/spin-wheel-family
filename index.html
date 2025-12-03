@@ -119,6 +119,10 @@ function shuffle(array) {
 // Shuffle the movie list initially
 shuffle(shuffledList);
 
+function updateCounter() {
+  document.getElementById('counter').innerText = `${currentIndex + 1}/${shuffledList.length}`;
+}
+
 function n() {
   if (currentIndex >= shuffledList.length) {
     // If all movies have been used, reshuffle and restart
