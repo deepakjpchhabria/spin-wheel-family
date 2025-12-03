@@ -126,6 +126,7 @@ function updateCounter() {
 function n() {
   if (currentIndex >= shuffledList.length) {
     // If all movies have been used, reshuffle and restart
+    document.getElementById('r').innerText = "🎉 Congratulations! You have completed the game! 🎉 Here begins the next round of same movies :)";
     shuffle(shuffledList);
     currentIndex = 0;
   }
