@@ -16,10 +16,14 @@
       background-color: #f7f7f7;
     }
 
-   #e {
-      font-size: 28px;
-      text-align: center;
-      margin: 20px;
+    #i {
+      width: 90%;
+      max-width: 400px;
+      padding: 10px;
+      font-size: 18px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
 
     button {
@@ -43,24 +47,19 @@
       text-align: center;
       color: #333;
     }
-    
-    #i {
-      width: 90%;
-      max-width: 400px;
-      padding: 10px;
-      font-size: 18px;
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+
+    #e {
+      font-size: 28px;
+      text-align: center;
+      margin: 20px;
     }
-   
   </style>
 </head>
 <body>
+  <div id="r"></div>
   <input id="i" placeholder="Guess Bollywood movie">
   <button onclick="c()">Guess</button>
   <button onclick="n()">New</button>
-  <div id="r"></div>
 
   <script>
     const L = [
