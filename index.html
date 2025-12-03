@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Family Spin The Wheel</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Family Spin The Wheel — Responsive</title>
 <style>
   :root{
-    --bg:#0b1220; --card:#0f1724; --accent:#ffd166; --muted:#cbd5e1;
+    --bg:#071028; --panel:#0f1724; --accent:#ffd166; --muted:#9fb0d1;
   }
   *{box-sizing:border-box}
   body{
@@ -16,38 +16,56 @@
     align-items:center;
     justify-content:center;
     font-family:system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;
-    background:linear-gradient(180deg,var(--bg),#071028);
+    background:linear-gradient(180deg,var(--bg),#02121b);
     color:#fff;
     padding:18px;
   }
-  .wrap{
-    width:min(760px,96vw);
-    background:linear-gradient(180deg,#0f1724, #071028);
-    border-radius:14px;
-    padding:16px;
-    box-shadow:0 8px 30px rgba(2,6,23,.6);
-    display:grid;
-    grid-template-columns: 1fr 260px;
-    gap:14px;
-    align-items:center;
-  }
 
-  @media (max-width:760px){ .wrap{ grid-template-columns:1fr; } }
+  /* card */
+  .wrap{
+    width:min(980px,96vw);
+    background:linear-gradient(180deg,#071028, #04101a);
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 10px 30px rgba(2,6,23,.6);
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:14px;
+    align-items:start;
+  }
+  @media (max-width:860px){ .wrap{ grid-template-columns:1fr; } }
 
   /* wheel area */
-  .wheel-area{ display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
-  .wheel-holder{ width:100%; max-width:420px; aspect-ratio:1/1; position:relative; }
-  canvas{ width:100%; height:100%; display:block; border-radius:50%; }
+  .wheel-area{ display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; padding:6px; }
+  /* FIXED RESPONSIVE WHEEL HOLDER */
+  .wheel-holder {
+    width: 100%;
+    max-width: 360px;       /* comfortable for most phones */
+    aspect-ratio: 1/1;
+    position: relative;
+    margin: 0 auto;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  /* canvas must be responsive */
+  canvas{
+    width:100%;
+    height:100%;
+    display:block;
+    border-radius:50%;
+  }
   .pointer{
     position:absolute;
     left:50%;
     transform:translateX(-50%);
-    top:-10px;
+    top:-8px;
     width:0;height:0;
     border-left:16px solid transparent;
     border-right:16px solid transparent;
     border-bottom:28px solid var(--accent);
-    filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));
+    z-index:30;
+    pointer-events:none;
   }
   .center{
     position:absolute;
@@ -57,14 +75,15 @@
     border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     background:linear-gradient(180deg,#fff,#f3f3f3);
-    color:#111; font-weight:700;
-    box-shadow:0 6px 18px rgba(0,0,0,.5);
+    color:#111; font-weight:800;
+    box-shadow:0 8px 26px rgba(0,0,0,.45);
     user-select:none;
+    z-index:25;
+    touch-action:manipulation;
   }
-
   /* controls */
   .controls{ padding:8px; display:flex; flex-direction:column; gap:12px; }
-  .controls h2{ margin:0; font-size:18px; color:var(--muted); font-weight:600; }
+  .controls h2{ margin:0; font-size:18px; color:var(--muted); font-weight:700; }
   .btn{
     background:var(--accent);
     color:#111;
@@ -76,9 +95,9 @@
     cursor:pointer;
     width:100%;
   }
-  .small{ font-size:13px; color:#c9d2e6 }
-  .list{ background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; max-height:220px; overflow:auto; }
-  .segment{ display:flex; gap:8px; align-items:center; justify-content:space-between; padding:6px 4px; border-bottom:1px dashed rgba(255,255,255,0.03); }
+  .small{ font-size:13px; color:#cfe3ff }
+  .list{ background:rgba(255,255,255,0.03); padding:8px; border-radius:8px; max-height:260px; overflow:auto; }
+  .segment{ display:flex; gap:8px; align-items:center; justify-content:space-between; padding:8px; border-bottom:1px dashed rgba(255,255,255,0.03); }
   .segment:last-child{ border-bottom:0; }
   input[type=text]{ width:100%; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:#fff; outline:none; }
   .row{ display:flex; gap:8px; }
@@ -92,42 +111,42 @@
   <div class="wheel-area">
     <div class="wheel-holder" id="wheelWrap">
       <div class="pointer" aria-hidden="true"></div>
-      <canvas id="wheel" width="800" height="800"></canvas>
+      <canvas id="wheelCanvas" width="800" height="800" aria-hidden="true"></canvas>
       <div class="center" id="centerBtn">SPIN</div>
     </div>
-    <div class="small" id="resultLabel"></div>
+    <div class="small" id="resultLabel" aria-live="polite"></div>
   </div>
 
   <div class="controls">
-    <h2>Wheel segments (tap to edit, then Add)</h2>
+    <h2>Wheel segments (tap Edit / Delete)</h2>
     <div class="row">
       <input id="newSeg" type="text" placeholder="Add prize / task / name (e.g. 'Ice Cream')" />
       <button class="btn" id="addBtn" style="width:auto;padding:10px 12px">Add</button>
     </div>
 
-    <div class="list" id="segList" aria-live="polite"></div>
+    <div class="list" id="segList"></div>
 
     <div class="row">
       <button class="btn" id="spinBtn">SPIN</button>
       <button class="btn" id="resetBtn" style="background:#2b3440;color:#fff;width:120px">RESET</button>
     </div>
 
-    <div class="small muted">Tips: Use 6–12 segments for best fun. You can long-press a segment in the list to remove it.</div>
+    <div class="small muted">Tips: Use 6–12 segments for best fun. Changes save to this device.</div>
   </div>
 
-  <footer>Family Spin • Works in mobile browser • No install needed</footer>
+  <footer>Family Spin • Responsive for iOS & Android • No install needed</footer>
 </div>
 
 <script>
 (() => {
-  // Config / state
+  // --- state & elements
   const defaultSegments = ['🍕 Pizza','Take a selfie','Extra dessert','Do a dance','Choose someone','Skip turn','Tell a secret','Swap seat'];
   let segments = JSON.parse(localStorage.getItem('ftw_segments') || 'null') || defaultSegments.slice();
   let isSpinning = false;
-  const canvas = document.getElementById('wheel');
+  const canvas = document.getElementById('wheelCanvas');
   const ctx = canvas.getContext('2d');
-  const centerBtn = document.getElementById('centerBtn');
   const wheelWrap = document.getElementById('wheelWrap');
+  const centerBtn = document.getElementById('centerBtn');
   const spinBtn = document.getElementById('spinBtn');
   const resetBtn = document.getElementById('resetBtn');
   const addBtn = document.getElementById('addBtn');
@@ -135,21 +154,36 @@
   const segList = document.getElementById('segList');
   const resultLabel = document.getElementById('resultLabel');
 
-  // Visuals
-  let size = canvas.width;
-  const radius = size/2;
-  const colors = [
-    '#ffb4a2','#ffd6a5','#fdffb6','#caffbf','#9bf6ff','#a0c4ff','#bdb2ff','#ffc6ff'
-  ];
+  // visuals
+  const colors = ['#ffb4a2','#ffd6a5','#fdffb6','#caffbf','#9bf6ff','#a0c4ff','#bdb2ff','#ffc6ff'];
 
-  // draw wheel
-  function drawWheel(rotation=0){
-    ctx.clearRect(0,0,size,size);
-    const n = segments.length || 1;
-    const angle = (2*Math.PI)/n;
+  // --- responsive canvas handling (DPR aware)
+  function fixCanvasForDPR(){
+    // measure CSS size of canvas
+    const rect = canvas.getBoundingClientRect();
+    const cssW = Math.max(200, Math.round(rect.width));
+    const cssH = Math.round(rect.height);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  // redraw wrapper (rotationRad in radians)
+  function drawWheel(rotation = 0){
+    fixCanvasForDPR();
+    const w = canvas.width / (window.devicePixelRatio||1);
+    const h = canvas.height / (window.devicePixelRatio||1);
+    const radius = Math.min(w,h)/2;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.save();
-    ctx.translate(radius, radius);
+    ctx.translate(w/2, h/2);
     ctx.rotate(rotation);
+    const n = Math.max(1, segments.length);
+    const angle = (2*Math.PI)/n;
+
     for(let i=0;i<n;i++){
       const start = i*angle;
       // slice
@@ -160,7 +194,7 @@
       ctx.fillStyle = colors[i % colors.length];
       ctx.fill();
 
-      // slice border
+      // border
       ctx.strokeStyle = 'rgba(0,0,0,0.15)';
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -169,19 +203,19 @@
       ctx.save();
       ctx.rotate(start + angle/2);
       ctx.translate(radius*0.62,0);
-      ctx.rotate(Math.PI/2); // rotate text upright
+      ctx.rotate(Math.PI/2);
       ctx.fillStyle = '#071028';
-      ctx.font = 'bold 20px system-ui,Segoe UI,Roboto';
-      const text = segments[i];
-      // wrap long text
-      wrapText(ctx, text, - (radius*0.2), -10, 140, 20);
+      // font size scaled by radius
+      const fontSize = Math.max(12, Math.round(radius * 0.09));
+      ctx.font = `bold ${fontSize}px system-ui,Segoe UI,Roboto`;
+      wrapText(ctx, segments[i], - (radius*0.2), -fontSize/2, radius*0.44, fontSize + 2);
       ctx.restore();
     }
     ctx.restore();
   }
 
   function wrapText(ctx, text, x, y, maxWidth, lineHeight){
-    const words = text.split(' ');
+    const words = String(text).split(' ');
     let line = '';
     let lineY = y;
     for(let n=0;n<words.length;n++){
@@ -198,27 +232,26 @@
     ctx.fillText(line, x, lineY);
   }
 
-  // UI: list of segments
+  // --- UI list rendering
   function renderList(){
     segList.innerHTML = '';
-    segments.forEach((s, i) => {
+    segments.forEach((s,i)=>{
       const div = document.createElement('div');
       div.className = 'segment';
-      div.innerHTML = `<div style="flex:1">${escapeHtml(s)}</div>
-                       <div style="min-width:70px;text-align:right;color:var(--muted)"><button data-i="${i}" style="background:transparent;border:0;color:var(--muted);cursor:pointer">Edit</button>
-                       <button data-del="${i}" style="background:transparent;border:0;color:#ffb4a2;cursor:pointer">Delete</button></div>`;
+      div.innerHTML = `<div style="flex:1;word-break:break-word">${escapeHtml(s)}</div>
+                       <div style="min-width:92px;text-align:right;color:var(--muted)">
+                         <button data-i="${i}" style="background:transparent;border:0;color:var(--muted);cursor:pointer">Edit</button>
+                         <button data-del="${i}" style="background:transparent;border:0;color:#ffb4a2;cursor:pointer">Delete</button>
+                       </div>`;
       segList.appendChild(div);
-
-      // edit
-      div.querySelector('button[data-i]')?.addEventListener('click', ()=> {
-        const newVal = prompt('Edit segment', s);
-        if(newVal !== null){
-          segments[i] = newVal.trim() || s;
+      div.querySelector('button[data-i]').addEventListener('click', ()=> {
+        const nv = prompt('Edit segment', s);
+        if(nv !== null){
+          segments[i] = nv.trim() || s;
           saveAndRedraw();
         }
       });
-      // delete
-      div.querySelector('button[data-del]')?.addEventListener('click', ()=> {
+      div.querySelector('button[data-del]').addEventListener('click', ()=> {
         if(confirm(`Remove "${s}"?`)){
           segments.splice(i,1);
           saveAndRedraw();
@@ -228,52 +261,50 @@
     updateResult('');
   }
 
-  function escapeHtml(s){ return s.replace?.(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') || s; }
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  // persistence
   function saveAndRedraw(){
     localStorage.setItem('ftw_segments', JSON.stringify(segments));
     drawWheel(0);
     renderList();
+    // reset any CSS transform so canvas and wrapper match visuals
+    wheelWrap.style.transition = '';
+    wheelWrap.style.transform = '';
   }
 
-  // spin logic
+  // --- spin logic (keeps wrapper transform for animation)
   function spinWheel(){
     if(isSpinning) return;
-    if(segments.length === 0) { alert('Add at least one segment'); return; }
+    if(segments.length === 0){ alert('Add at least one segment'); return; }
     isSpinning = true;
-    resultLabel.textContent = '';
-    // choose random target index but with fair randomness: pick random full rotations + angle towards chosen index center
+    updateResult('');
     const n = segments.length;
-    const chosenIndex = Math.floor(Math.random() * n); // target slice index
+    const chosenIndex = Math.floor(Math.random() * n);
     const sliceAngle = 360 / n;
-    // compute target rotation in degrees: We rotate the wheel so that chosen slice center lands at pointer (top)
-    // canvas drawing zero-rotation has slice 0 starting at angle 0 (to the right). We must map correctly.
-    // We used rotation applied when drawing; pointer at top (270deg). We'll compute angle offset accordingly.
     const rotations = Math.floor(Math.random()*3) + 4; // 4..6 full spins
-    // Angle to center of chosen slice (in degrees, wheel coordinate where 0deg is to the right). To bring slice center to top (270deg),
-    // we want finalRotationDegrees such that (initialRotation + finalRotation + sliceCenter) mod 360 === 270
-    // We'll just compute: target = rotations*360 + 270 - sliceCenter
+    // compute degrees so chosen slice center lands at pointer (top -> 270deg)
     const sliceCenterDeg = (chosenIndex * sliceAngle) + (sliceAngle/2);
-    const target = rotations * 360 + 270 - sliceCenterDeg;
-    // animate via CSS transform on wrapper for smooth mobile GPU acceleration
-    wheelWrap.style.transition = 'transform 5s cubic-bezier(.15,.9,.3,1)';
-    wheelWrap.style.transform = `rotate(${target}deg)`;
+    const targetDeg = rotations * 360 + 270 - sliceCenterDeg;
 
-    // sound: brief ticking (optional simple)
-    simpleTickEffect(5);
+    // animate wrapper (GPU accelerated)
+    wheelWrap.style.transition = 'transform 4.6s cubic-bezier(.15,.9,.3,1)';
+    wheelWrap.style.transformOrigin = '50% 50%';
+    wheelWrap.style.transform = `rotate(${targetDeg}deg)`;
 
-    // after transition end
+    // optional ticks
+    simpleTickEffect(6);
+
     const onEnd = () => {
       wheelWrap.style.transition = '';
-      // compute final rotation degrees normalized to 0..360
-      const finalDeg = target % 360;
-      // draw wheel at equivalent rotation in canvas coords (convert deg to radians and invert sign because CSS rotation positive is clockwise)
+      // normalize final angle for canvas redraw: finalDeg is 0..360
+      const finalDeg = ((targetDeg % 360) + 360) % 360;
+      // convert to radians and invert sign for canvas rotation direction
       const rotationRad = (finalDeg * Math.PI/180) * -1;
       drawWheel(rotationRad);
       setTimeout(()=> {
         const winner = segments[chosenIndex];
         updateResult(`Result: ${winner}`);
+        // small alert for clarity on iOS (can be removed if you prefer no alert)
         alert(`Winner: ${winner}`);
         isSpinning = false;
       }, 80);
@@ -282,11 +313,8 @@
     wheelWrap.addEventListener('transitionend', onEnd);
   }
 
-  function updateResult(txt){
-    resultLabel.textContent = txt;
-  }
+  function updateResult(txt){ resultLabel.textContent = txt; }
 
-  // reset
   function resetWheel(){
     if(isSpinning) return;
     if(!confirm('Reset wheel to default segments?')) return;
@@ -294,7 +322,7 @@
     saveAndRedraw();
   }
 
-  // add new segment
+  // add/new segment handlers
   addBtn.addEventListener('click', ()=>{
     const v = newSeg.value.trim();
     if(!v) return;
@@ -302,21 +330,27 @@
     newSeg.value = '';
     saveAndRedraw();
   });
-  newSeg.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter') addBtn.click();
-  });
+  newSeg.addEventListener('keydown', (e)=> { if(e.key === 'Enter') addBtn.click(); });
 
-  // spin button & center button
+  // spin triggers
   spinBtn.addEventListener('click', spinWheel);
   centerBtn.addEventListener('click', spinWheel);
-
   resetBtn.addEventListener('click', resetWheel);
 
-  // initial draw
-  drawWheel(0);
-  renderList();
+  // initial draw & resize handling
+  function initialDraw(){
+    fixCanvasForDPR();
+    drawWheel(0);
+    renderList();
+  }
+  initialDraw();
 
-  // helper: simple tick sound effect using WebAudio (short sequence)
+  // redraw on resize/orientation change (debounced)
+  let rio;
+  window.addEventListener('resize', ()=> { clearTimeout(rio); rio = setTimeout(()=> { fixCanvasForDPR(); drawWheel(0); }, 120); });
+  window.addEventListener('orientationchange', ()=> { setTimeout(()=> { fixCanvasForDPR(); drawWheel(0); }, 200); });
+
+  // small tick effect using WebAudio (non-blocking)
   function simpleTickEffect(repeat){
     if(!window.AudioContext) return;
     try{
@@ -336,27 +370,13 @@
         o.stop(now + t + 0.11);
         t += 0.12;
       }
-      // close context after sounds
       setTimeout(()=> { try{ ac.close(); }catch(e){} }, (t+0.2)*1000);
     }catch(e){}
   }
 
-  // on load: ensure canvas high-DPI looks crisp
-  function fixCanvasForDPR(){
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = canvas.width;
-    const h = canvas.height;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    canvas.style.width = w + 'px';
-    canvas.style.height = h + 'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  fixCanvasForDPR();
-  drawWheel(0);
+  // expose small helper for debugging (optional)
+  window.ftw = { redraw: saveAndRedraw, segments };
 
-  // expose for debugging (optional)
-  window.ftw = { segments, redraw: saveAndRedraw };
 })();
 </script>
 </body>
