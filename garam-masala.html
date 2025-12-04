@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Garam Masala — Level Mode</title>
+<title>Garam Masala — Unscramble Level Mode</title>
 <style>
   :root{--bg:#071028;--card:#0f1724;--accent:#ffb86b;--good:#4ade80;--bad:#ff6b6b;--muted:#9fb0d1}
   *{box-sizing:border-box}
@@ -15,7 +15,7 @@
   .board{display:grid;grid-template-columns:1fr 320px;gap:14px;margin-top:12px}
   @media (max-width:860px){ .board{grid-template-columns:1fr} }
   .card{background:linear-gradient(180deg,#0f1724,#071428);padding:14px;border-radius:10px}
-  .word{font-size:36px;text-align:center;font-weight:800;color:var(--accent);padding:18px 8px;border-radius:8px}
+  .scramble{font-size:34px;text-align:center;font-weight:900;color:var(--accent);padding:18px 8px;border-radius:8px;letter-spacing:2px}
   .bar{height:10px;background:rgba(255,255,255,0.05);border-radius:999px;overflow:hidden;margin-top:8px}
   .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#fff);width:0%}
   .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
@@ -32,16 +32,16 @@
   .big{font-size:20px;font-weight:800}
   .center{display:flex;justify-content:center;gap:8px}
   footer{margin-top:12px;text-align:center;color:var(--muted);font-size:13px}
-  .win{padding:18px;text-align:center}
-  input[type=text]{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff}
+  input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;margin-top:10px}
+  .mutedSmall{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div>
-      <h1>Garam Masala — Level Mode</h1>
-      <div class="meta">Each word = <strong>3:00</strong> • 10 words per level • Finish all levels to win</div>
+      <h1>Garam Masala — Unscramble Level Mode</h1>
+      <div class="meta">Each word = <strong>3:00</strong> • 10 words per level • Type answer and SUBMIT</div>
     </div>
     <div class="meta" id="statusTop">Level 1 • Word 1/10</div>
   </header>
@@ -50,14 +50,18 @@
     <!-- main -->
     <div class="card">
       <div id="mainArea">
-        <div class="word" id="wordDisplay">—</div>
+        <div class="scramble" id="scrambleDisplay">—</div>
         <div class="bar" title="Time left"><i id="timeBar"></i></div>
         <div class="center" style="margin-top:12px">
           <div class="big" id="timerDisplay">03:00</div>
         </div>
 
+        <div style="margin-top:12px">
+          <input id="answerInput" type="text" placeholder="Type your unscrambled word here" autocomplete="off" autocapitalize="none" />
+        </div>
+
         <div class="controls">
-          <button id="solveBtn">SOLVED ✅</button>
+          <button id="submitBtn">SUBMIT ✔</button>
           <button id="skipBtn" class="alt">SKIP ⏭</button>
           <button id="giveBtn" class="alt">GIVE UP ❌</button>
           <button id="revealBtn" class="mutedBtn">REVEAL</button>
@@ -68,7 +72,7 @@
           <button id="resumeBtn" class="mutedBtn" style="display:none">RESUME</button>
         </div>
 
-        <div class="small">Use REVEAL if you want to show the answer to family. Skipping keeps game moving.</div>
+        <div class="small">Tip: family can discuss during 3 minutes — type answer and press SUBMIT. Autocheck is relaxed with small typo tolerance.</div>
       </div>
 
       <div id="levelSummary" style="display:none;margin-top:12px" class="box"></div>
@@ -93,7 +97,7 @@
       </div>
 
       <div class="box">
-        <div class="small">Level Words</div>
+        <div class="small">Level Words (scrambled)</div>
         <div class="list" id="wordsList"></div>
       </div>
     </div>
@@ -101,15 +105,14 @@
 
   <footer>
     <div id="footerArea" style="display:block">
-      Tip: family can discuss while timer runs — no rush, pure masala. 🍵🎬
+      Tip: family can discuss while timer runs — pure masala time. 🍵🎬
     </div>
   </footer>
 </div>
 
-<!-- Win overlay (hidden until win) -->
 <div id="winOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;z-index:9999">
   <div style="background:linear-gradient(180deg,#0f1724,#071428);padding:20px;border-radius:12px;color:#fff;max-width:720px;margin:24px">
-    <div class="win">
+    <div class="win" style="text-align:center">
       <div style="font-size:22px;font-weight:900">🎉 CONGRATULATIONS — YOU MASTERED GAR̲AM MASALA! 🎉</div>
       <div style="margin-top:8px;color:var(--muted)">You finished all levels, unscrambled filmy flavour, and sprinkled your own masala on every word. Proud moment, bhidu!</div>
       <div style="margin-top:12px">
@@ -125,7 +128,6 @@
 
 <script>
 /* =================== Word list (final cleaned words) =================== */
-/* Movies / names / lyrical / filmy words - curated earlier */
 const ALL_WORDS = [
 "DDLJ","SHOLAY","BARFI","ROCKY","TAMASHA","DEVDAS","ANAND","DON","DHOOM","TIGER","KABIR","DILSE","RAAZI","QUEEN","FALTU","URI","GULLY","PUSHPA","ANIMAL","JAWAAN","PATHAAN","KALKI",
 "SIMRAN","RAJ","VIJAY","POOJA","ROHIT","RADHA","ARJUN","KABIR_NAME","NISHA","SALMAN","ANJALI","RAHUL","PREM","MADHURI","KARAN",
@@ -133,23 +135,22 @@ const ALL_WORDS = [
 "SITAR","MAALA","GHODA","RANG","DHOOP","DIYA","GHUNGROO","AUTO","MAUSAM",
 "SAJNA","PIYA","MEHFIL","RAABTA","JASHN","NIGAAH","ISHQ","NOOR","JANNAT","FITOOR","AWAARA","MITWA","GALTI SE MISTAKE","KESARIYA","PATIALA PEG","ZARA ZARA","PEHLA NASHA","RADHA_SONG","ASHIQUI","JHOOM","TUM HI HO","SAIYAARA","SATRANGI","JABSE","SAAWARIYA"
 ];
-/* note: used safe tokens for duplicates or multi-word items (spaces preserved) */
 
 /* =================== Settings =================== */
 const WORDS_PER_LEVEL = 10;
-const VISIBLE_MS = 180000; // 3 minutes = 180,000 ms
+const VISIBLE_MS = 180000; // 3 minutes
 
 /* =================== State =================== */
 let shuffled = [];
-let levels = []; // array of arrays (each level is array of words)
-let currentLevel = 0; // 0-indexed
-let currentIndex = 0; // 0-indexed in level (0..9)
+let levels = [];
+let currentLevel = 0;
+let currentIndex = 0;
 let score = 0, streak = 0;
 let timer = null, startTS = 0, remaining = 0, paused = false;
 let high = Number(localStorage.getItem('gm_high') || 0);
 
 /* =================== DOM refs =================== */
-const wordDisplay = document.getElementById('wordDisplay');
+const scrambleDisplay = document.getElementById('scrambleDisplay');
 const timeBar = document.getElementById('timeBar');
 const timerDisplay = document.getElementById('timerDisplay');
 const levelNumEl = document.getElementById('levelNum');
@@ -161,7 +162,7 @@ const statusTop = document.getElementById('statusTop');
 const wordsList = document.getElementById('wordsList');
 const levelSummary = document.getElementById('levelSummary');
 const winOverlay = document.getElementById('winOverlay');
-const footerArea = document.getElementById('footerArea');
+const answerInput = document.getElementById('answerInput');
 
 /* =================== Utility =================== */
 function shuffleArray(a){
@@ -179,16 +180,55 @@ function formatMs(ms){
 }
 function beep(freq,dur){ try{ const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(), g=a.createGain(); o.frequency.value=freq; o.connect(g); g.connect(a.destination); o.start(); setTimeout(()=>{ o.stop(); a.close().catch(()=>{}); },dur);}catch(e){} }
 
-/* =================== Setup levels =================== */
+/* small cleaner for matching */
+function clean(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+
+/* Levenshtein distance for tolerant matching */
+function distance(a,b){
+  a=clean(a); b=clean(b);
+  const A=a.length, B=b.length;
+  if(A===0) return B; if(B===0) return A;
+  const dp = Array.from({length:A+1}, ()=>Array(B+1).fill(0));
+  for(let i=0;i<=A;i++) dp[i][0]=i;
+  for(let j=0;j<=B;j++) dp[0][j]=j;
+  for(let i=1;i<=A;i++){
+    for(let j=1;j<=B;j++){
+      dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    }
+  }
+  return dp[A][B];
+}
+
+/* scramble helper: keep punctuation/space groups, scramble letters within whole string */
+function scrambleWord(original){
+  // if multi-word (has spaces), scramble each token separately but keep token order
+  const tokens = String(original).split(' ');
+  const scrambledTokens = tokens.map(token=>{
+    // preserve length-1 or short tokens by simple shuffle but ensure not equal
+    const chars = token.split('');
+    // try shuffle up to 10 times to avoid same
+    for(let t=0;t<10;t++){
+      for(let i=chars.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [chars[i],chars[j]]=[chars[j],chars[i]];
+      }
+      const s = chars.join('');
+      if(s.toLowerCase() !== token.toLowerCase()) return s;
+    }
+    return token.split('').reverse().join('');
+  });
+  return scrambledTokens.join(' ');
+}
+
+/* =================== Prepare levels =================== */
 function prepareLevels(){
   shuffled = shuffleArray(ALL_WORDS.slice());
   levels = [];
   for(let i=0;i<shuffled.length;i+=WORDS_PER_LEVEL){
     levels.push(shuffled.slice(i, i+WORDS_PER_LEVEL));
   }
-  // if last level is < WORDS_PER_LEVEL, keep as final bonus (allowed)
   totalLevelsEl.innerText = levels.length;
-  // load progress from localStorage if exists
+  // load progress if any
   const saved = localStorage.getItem('gm_progress');
   if(saved){
     try{
@@ -207,13 +247,14 @@ function renderWordsList(){
   const lvl = levels[currentLevel] || [];
   lvl.forEach((w,i)=>{
     const div = document.createElement('div'); div.className='row';
-    div.innerHTML = `<div style="flex:1">${escapeHtml(w)}</div><div style="width:64px;text-align:right">${i<currentIndex?'<span style="color:#4ade80">✔</span>':(i===currentIndex?'<span style="color:var(--accent)">●</span>':'')}</div>`;
+    const scr = scrambleWord(w);
+    div.innerHTML = `<div style="flex:1">${escapeHtml(scr)}</div><div style="width:64px;text-align:right">${i<currentIndex?'<span style="color:#4ade80">✔</span>':(i===currentIndex?'<span style="color:var(--accent)">●</span>':'')}</div>`;
     wordsList.appendChild(div);
   });
 }
 function updateHeader(){
   const L = levels.length;
-  levelNumEl.innerText = currentLevel+1;
+  document.getElementById('levelNum').innerText = currentLevel+1;
   totalLevelsEl.innerText = L;
   wordIdxEl.innerText = Math.min(currentIndex+1, (levels[currentLevel]||[]).length);
   scoreEl.innerText = score;
@@ -221,19 +262,19 @@ function updateHeader(){
   statusTop.innerText = `Level ${currentLevel+1} • Word ${Math.min(currentIndex+1, (levels[currentLevel]||[]).length)}/${WORDS_PER_LEVEL}`;
 }
 
-/* =================== Core: show current word & start timer =================== */
+/* =================== Core: show current scrambled & start timer =================== */
+let currentOriginal = '';
 function showCurrent(){
   const lvl = levels[currentLevel] || [];
-  if(currentIndex >= lvl.length){
-    // level finished
-    finishLevel();
-    return;
-  }
-  const w = lvl[currentIndex];
-  wordDisplay.innerText = w;
+  if(currentIndex >= lvl.length){ finishLevel(); return; }
+  const orig = lvl[currentIndex];
+  currentOriginal = orig;
+  const scr = scrambleWord(orig);
+  scrambleDisplay.innerText = scr;
+  answerInput.value = '';
+  answerInput.focus();
   renderWordsList();
   updateHeader();
-  // start countdown
   startCountdown(VISIBLE_MS);
 }
 
@@ -243,7 +284,6 @@ function startCountdown(duration){
   paused = false;
   remaining = duration;
   startTS = Date.now();
-  // animate bar
   timeBar.style.transition = 'none';
   timeBar.style.width = '100%';
   setTimeout(()=>{ timeBar.style.transition = 'width '+(duration/1000)+'s linear'; timeBar.style.width='0%'; },20);
@@ -257,7 +297,6 @@ function updateTimerDisplay(){
     const elapsed = Date.now() - startTS;
     const left = Math.max(0, remaining - elapsed);
     timerDisplay.innerText = formatMs(left);
-    // schedule next update
     setTimeout(updateTimerDisplay, 300);
   }
 }
@@ -283,7 +322,6 @@ function resumeGame(){
   document.getElementById('pauseBtn').style.display='inline-block';
   document.getElementById('resumeBtn').style.display='none';
   startTS = Date.now();
-  // animate remaining
   timeBar.style.transition = 'none';
   timeBar.style.width = (remaining / VISIBLE_MS * 100) + '%';
   setTimeout(()=>{ timeBar.style.transition = 'width '+(remaining/1000)+'s linear'; timeBar.style.width = '0%'; },20);
@@ -292,36 +330,66 @@ function resumeGame(){
   beep(700,80);
 }
 
-/* =================== Actions: SOLVED / SKIP / GIVE UP / REVEAL / MISS =================== */
-function onSolved(){
-  clearTimeout(timer);
-  score += 1; // +1 for correct in slow mode
-  streak += 1;
-  beep(900,120);
-  nextWord();
+/* =================== Actions: SUBMIT / SKIP / GIVE UP / REVEAL / MISS =================== */
+function acceptAnswer(input){
+  const a = clean(input);
+  const b = clean(currentOriginal);
+  if(!a) return false;
+  // direct match
+  if(a === b) return true;
+  // fuzzy tolerance for longer words
+  if(Math.max(a.length, b.length) > 4){
+    const d = distance(a,b);
+    if(d <= 2) return true;
+  }
+  return false;
 }
+
+function onSubmit(){
+  if(paused) return;
+  const val = answerInput.value.trim();
+  if(!val){ alert('Type your guess then press SUBMIT'); answerInput.focus(); return; }
+  if(acceptAnswer(val)){
+    clearTimeout(timer);
+    score += 1;
+    streak += 1;
+    beep(900,120);
+    nextWord();
+  } else {
+    // wrong
+    clearTimeout(timer);
+    score = Math.max(-999, score - 1);
+    streak = 0;
+    beep(220,140);
+    alert('Wrong! The correct word was: ' + currentOriginal);
+    nextWord();
+  }
+}
+
 function onSkip(){
+  if(!confirm('Skip this word?')) return;
   clearTimeout(timer);
-  // no penalty (skip) — move on
   streak = 0;
   nextWord();
 }
 function onGiveUp(){
+  if(!confirm('Give up on this word? (−1)')) return;
   clearTimeout(timer);
   score = Math.max(-999, score - 1);
   streak = 0;
-  beep(220,140);
   nextWord();
 }
 function onReveal(){
-  // shows the answer for family
-  alert('Answer: ' + (levels[currentLevel] && levels[currentLevel][currentIndex] || '—'));
+  clearTimeout(timer);
+  alert('Answer: ' + currentOriginal);
+  nextWord();
 }
 function onMiss(){
-  // time out
+  // timed out
   score = Math.max(-999, score - 1);
   streak = 0;
   beep(220,140);
+  alert('Time up! The answer was: ' + currentOriginal);
   nextWord();
 }
 
@@ -329,7 +397,6 @@ function onMiss(){
 function nextWord(){
   currentIndex++;
   saveProgress();
-  // if word index within level exists, brief flash then show
   setTimeout(()=>{
     updateHeader();
     if(currentIndex >= (levels[currentLevel]||[]).length){
@@ -337,17 +404,16 @@ function nextWord(){
     } else {
       showCurrent();
     }
-  }, 600);
+  }, 450);
 }
 
 /* finish level */
 function finishLevel(){
   clearTimeout(timer);
-  // summary
   const lvlWords = levels[currentLevel] || [];
   levelSummary.style.display = 'block';
   levelSummary.innerHTML = `<div style="font-weight:900">Level ${currentLevel+1} Complete</div>
-    <div class="small" style="margin-top:8px">Words in this level:</div>
+    <div class="small" style="margin-top:8px">Words in this level (original):</div>
     <div style="margin-top:8px">${lvlWords.map(w=>'<div style="padding:4px 0">'+escapeHtml(w)+'</div>').join('')}</div>
     <div style="margin-top:8px">Score: <strong>${score}</strong> • Streak: <strong>${streak}</strong></div>
     <div style="margin-top:10px"><button id="nextLevelBtn">Next Level</button> <button id="replayLevelBtn" class="alt">Replay Level</button></div>`;
@@ -356,7 +422,6 @@ function finishLevel(){
     currentIndex = 0;
     levelSummary.style.display = 'none';
     if(currentLevel >= levels.length){
-      // all levels done -> win
       onWin();
     } else {
       saveProgress();
@@ -364,7 +429,6 @@ function finishLevel(){
     }
   });
   document.getElementById('replayLevelBtn').addEventListener('click', ()=>{
-    // replay: reshuffle this level's words and restart
     levels[currentLevel] = shuffleArray(levels[currentLevel].slice());
     currentIndex = 0;
     levelSummary.style.display = 'none';
@@ -377,8 +441,6 @@ function finishLevel(){
 function onWin(){
   clearTimeout(timer);
   winOverlay.style.display = 'flex';
-  const msg = `You finished Garam Masala — full respect, bhidu!`;
-  // update high
   if(score > high){ high = score; localStorage.setItem('gm_high', high); }
   document.getElementById('replayBtn').addEventListener('click', ()=>{
     winOverlay.style.display = 'none';
@@ -391,7 +453,6 @@ function onWin(){
 
 /* restart / reset */
 function restartGame(){
-  // Fresh new shuffle and start from level 0
   currentLevel = 0; currentIndex = 0; score = 0; streak = 0;
   prepareLevels();
   saveProgress(true);
@@ -408,20 +469,18 @@ function resetGame(){
 function saveProgress(forceSave){
   const p = { currentLevel, currentIndex, score, streak, timestamp: Date.now() };
   localStorage.setItem('gm_progress', JSON.stringify(p));
-  // also save words snapshot occasionally
   if(forceSave) localStorage.setItem('gm_savedWords', JSON.stringify(levels));
 }
 
 /* suggestions / feedback */
 function promptSuggest(){
-  const s = prompt('Suggest a Bollywood word (one word or short phrase). Your suggestion will be saved and we will email you a thank-you link.', '');
+  const s = prompt('Suggest a Bollywood word (one word or short phrase). It will be saved locally and you can optionally email it.', '');
   if(!s) return;
   const list = JSON.parse(localStorage.getItem('gm_suggestions')||'[]');
   list.push({word:s, when:new Date().toISOString()});
   localStorage.setItem('gm_suggestions', JSON.stringify(list));
-  // open mailto to let them send formally
   const subject = encodeURIComponent('Garam Masala — Word Suggestion');
-  const body = encodeURIComponent('Hey team,%0A%0AI suggest this word for Garam Masala: ' + s + '%0A%0AThanks!');
+  const body = encodeURIComponent('I suggest this word: ' + s);
   window.location.href = `mailto:your-email@example.com?subject=${subject}&body=${body}`;
 }
 function promptFeedback(){
@@ -433,15 +492,15 @@ function promptFeedback(){
   alert('Thanks boss — feedback saved!');
 }
 
-/* share link */
+/* share */
 function shareGame(){
   const url = location.href;
-  const text = 'Try Garam Masala — my family word game!';
+  const text = 'Try Garam Masala — my family unscramble game!';
   if(navigator.share){
     navigator.share({title:'Garam Masala', text, url}).catch(()=>{ copyToClipboard(url); alert('Link copied'); });
   } else {
     copyToClipboard(url);
-    alert('Link copied to clipboard — share it with family!');
+    alert('Link copied to clipboard — share it!');
   }
 }
 function copyToClipboard(text){
@@ -452,9 +511,9 @@ function copyToClipboard(text){
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 /* =================== Bind UI buttons =================== */
-document.getElementById('solveBtn').addEventListener('click', ()=>{ onSolved(); updateHeader(); saveProgress(); });
-document.getElementById('skipBtn').addEventListener('click', ()=>{ if(confirm('Skip this word?')) onSkip(); });
-document.getElementById('giveBtn').addEventListener('click', ()=>{ if(confirm('Give up on this word? (−1)')) onGiveUp(); });
+document.getElementById('submitBtn').addEventListener('click', ()=>{ onSubmit(); updateHeader(); saveProgress(); });
+document.getElementById('skipBtn').addEventListener('click', ()=>{ onSkip(); });
+document.getElementById('giveBtn').addEventListener('click', ()=>{ onGiveUp(); });
 document.getElementById('revealBtn').addEventListener('click', ()=>{ onReveal(); });
 document.getElementById('pauseBtn').addEventListener('click', ()=>{ pauseGame(); });
 document.getElementById('resumeBtn').addEventListener('click', ()=>{ resumeGame(); });
@@ -462,13 +521,16 @@ document.getElementById('restartLevel').addEventListener('click', ()=>{ if(confi
 document.getElementById('resetGame').addEventListener('click', ()=>{ resetGame(); });
 document.getElementById('shareBtn').addEventListener('click', ()=>{ shareGame(); });
 
+/* keyboard: Enter submits */
+answerInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ onSubmit(); } });
+
 /* =================== Init =================== */
 prepareLevels();
 updateHeader();
 showCurrent();
 saveProgress(true);
 
-/* Ensure we save progress before unload */
+/* save before unload */
 window.addEventListener('beforeunload', ()=>{ saveProgress(); });
 
 </script>
