@@ -299,22 +299,38 @@ function scrambleWord(original){
 
 /* =================== Prepare levels =================== */
 function prepareLevels(){
+  // shuffle base list into blocks of WORDS_PER_LEVEL
   shuffled = shuffleArray(ALL_WORDS.slice());
   levels = [];
   for(let i=0;i<shuffled.length;i+=WORDS_PER_LEVEL){
     levels.push(shuffled.slice(i, i+WORDS_PER_LEVEL));
   }
+
+  // fallback: if something went wrong and levels is empty, create one level with ALL_WORDS
+  if(!levels.length){
+    levels = [ALL_WORDS.slice(0, Math.min(WORDS_PER_LEVEL, ALL_WORDS.length))];
+  }
+
+  // show total levels in UI
   totalLevelsEl.innerText = levels.length;
-  // load progress if any
+
+  // load progress if any (safe clamp)
   const saved = localStorage.getItem('gm_progress');
   if(saved){
     try{
       const p = JSON.parse(saved);
-      currentLevel = p.currentLevel || 0;
-      currentIndex = p.currentIndex || 0;
-      score = p.score || 0;
-      streak = p.streak || 0;
-    }catch(e){}
+      // clamp safely to available levels/indices
+      currentLevel = Math.max(0, Math.min(Number(p.currentLevel || 0), levels.length - 1));
+      const maxIdx = Math.max(0, (levels[currentLevel] || []).length - 1);
+      currentIndex = Math.max(0, Math.min(Number(p.currentIndex || 0), maxIdx));
+      score = Number(p.score) || 0;
+      streak = Number(p.streak) || 0;
+    }catch(e){
+      console.warn('gm_progress parse failed', e);
+      currentLevel = 0; currentIndex = 0; score = 0; streak = 0;
+    }
+  } else {
+    currentLevel = 0; currentIndex = 0;
   }
 }
 
