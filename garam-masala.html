@@ -425,8 +425,8 @@ function onSubmit(){
     clearTimeout(timer);
     score += 1;
     streak += 1;
-    beep(900,120);
-    nextWord();
+     // play animation then nextWord()
+    showCorrectAnimation();
   } else {
     // wrong
     clearTimeout(timer);
