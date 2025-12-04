@@ -201,7 +201,57 @@ function formatMs(ms){
   return mm+':'+ss;
 }
 function beep(freq,dur){ try{ const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(), g=a.createGain(); o.frequency.value=freq; o.connect(g); g.connect(a.destination); o.start(); setTimeout(()=>{ o.stop(); a.close().catch(()=>{}); },dur);}catch(e){} }
+/* small confetti burst (lightweight) */
+function confettiBurstSmall(){
+  const container = document.getElementById('scrambleDisplay');
+  for(let i=0;i<20;i++){
+    const el = document.createElement('div');
+    el.style.position = 'absolute';
+    el.style.left = (50 + (Math.random()*120-60)) + '%';
+    el.style.top = (40 + Math.random()*10) + '%';
+    el.style.width = '8px';
+    el.style.height = '10px';
+    el.style.background = ['#ffd166','#ff6b6b','#4ade80','#9bf6ff'][Math.floor(Math.random()*4)];
+    el.style.borderRadius = '2px';
+    el.style.opacity = '0.98';
+    el.style.transform = 'translateY(0) rotate('+ (Math.random()*360) +'deg)';
+    el.style.transition = 'transform 900ms cubic-bezier(.2,.7,.2,1), opacity 900ms';
+    container.appendChild(el);
+    setTimeout(()=>{ el.style.transform = 'translateY(120px) rotate('+ (360+Math.random()*720) +'deg)'; el.style.opacity = '0'; }, 20 + Math.random()*120);
+    setTimeout(()=>el.remove(), 1000);
+  }
+}
 
+/* show green pop + floating +1 then call nextWord after animation */
+function showCorrectAnimation(){
+  // pop the word
+  scrambleDisplay.classList.add('pop');
+  const prevColor = scrambleDisplay.style.color;
+  scrambleDisplay.style.color = 'var(--good)';
+
+  // floating +1
+  const plus = document.createElement('div');
+  plus.className = 'floatPlus';
+  plus.innerText = '+1';
+  scrambleDisplay.appendChild(plus);
+  // animate up & fade
+  requestAnimationFrame(()=> {
+    plus.style.transform = 'translate(-50%,-60px) scale(1.0)';
+    plus.style.opacity = '0';
+  });
+
+  confettiBurstSmall();
+  beep(1100,100);
+
+  // cleanup & continue
+  setTimeout(()=>{
+    scrambleDisplay.classList.remove('pop');
+    scrambleDisplay.style.color = ''; // revert to CSS color
+    plus.remove();
+    // proceed to next word
+    nextWord();
+  }, 700); // keep in sync with pop/confetti
+}
 /* small cleaner for matching */
 function clean(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
 
