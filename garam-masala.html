@@ -242,6 +242,9 @@ function showCorrectAnimation(){
 
   confettiBurstSmall();
   beep(1100,100);
+  
+  answerInput.value = ''; // Clear input
+  answerInput.blur(); // Dismiss the keyboard
 
   // cleanup & continue
   setTimeout(()=>{
@@ -434,6 +437,8 @@ function onSubmit(){
     streak = 0;
     beep(220,140);
     alert('Wrong! The correct word was: ' + currentOriginal);
+    answerInput.value = ''; // Clear input
+    answerInput.blur(); // Dismiss the keyboard
     nextWord();
   }
 }
