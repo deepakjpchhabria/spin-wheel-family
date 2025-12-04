@@ -583,7 +583,14 @@ function copyToClipboard(text){
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 /* =================== Bind UI buttons =================== */
-document.getElementById('submitBtn').addEventListener('click', ()=>{ onSubmit(); updateHeader(); saveProgress(); });
+document.getElementById('submitBtn').addEventListener('click', () => {
+    onSubmit();
+    updateHeader();
+    saveProgress();
+    
+    // Explicitly dismiss the keyboard
+    document.activeElement?.blur(); // Deselects input element to close the keyboard
+});
 document.getElementById('skipBtn').addEventListener('click', ()=>{ onSkip(); });
 document.getElementById('giveBtn').addEventListener('click', ()=>{ onGiveUp(); });
 document.getElementById('revealBtn').addEventListener('click', ()=>{ onReveal(); });
