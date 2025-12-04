@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Deepak's Game Arcade</title>
+<link rel="manifest" href="/manifest.json">
+<style>
+  :root{--bg:#071028;--card:#0f1724;--accent:#ffb86b;--muted:#9fb0d1}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto;background:linear-gradient(180deg,var(--bg),#02121b);color:#fff;display:flex;align-items:center;justify-content:center;padding:24px;min-height:100vh}
+  .wrap{max-width:920px;width:98vw;background:linear-gradient(180deg,#081428,#04101a);padding:20px;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  h1{margin:0;font-size:20px}
+  .sub{color:var(--muted);margin-top:6px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  @media(max-width:740px){ .grid{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg,#0f1724,#071428);padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:8px}
+  .title{font-weight:900;font-size:16px}
+  .desc{color:var(--muted);font-size:13px}
+  .playRow{display:flex;align-items:center;gap:12px;margin-top:8px}
+  .play{background:var(--accent);color:#111;padding:8px 12px;border-radius:10px;font-weight:800;text-decoration:none}
+  .meta{color:var(--muted);font-size:13px;margin-top:12px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{background:transparent;border:1px solid rgba(255,255,255,.06);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
+  .small{color:var(--muted);font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Deepak's Game Arcade</h1>
+        <div class="sub">Family-friendly games — quick, filmy, and fun. Add to home screen for the best experience.</div>
+      </div>
+      <div class="meta">Two games • Share with family • No trackers</div>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <div class="title">Garam Masala — Unscramble</div>
+        <div class="desc">Bollywood-themed unscramble. Slow family mode: 3 minutes per word, 10 words per level.</div>
+        <div class="playRow">
+          <a id="linkGar" class="play" href="/dc-family-games/" target="_blank" rel="noopener">Play Garam Masala</a>
+          <div style="color:var(--muted)">Plays: <span id="plays_garam">0</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">Andaz Apna Apna — Emoji Edition</div>
+        <div class="desc">Guess the Bollywood movie from emojis. Short rounds, big laughs — family favourite.</div>
+        <div class="playRow">
+          <!-- CHANGE this href to wherever your emoji game lives -->
+          <a id="linkEmoji" class="play" href="/andaz-emoji/" target="_blank" rel="noopener">Play Emoji Game</a>
+          <div style="color:var(--muted)">Plays: <span id="plays_emoji">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="addHome" class="btn">Add to Home Screen</button>
+      <button id="shareHub" class="btn">Share Arcade</button>
+      <button id="resetCounts" class="btn">Reset stats</button>
+    </div>
+
+    <div class="small">Tip: open on phone, tap Add to Home Screen for instant-launch. Want centralized analytics or QR codes? I can add them.</div>
+  </div>
+
+<script>
+/* -------- simple privacy-safe local analytics -------- */
+function loadCounts(){ return JSON.parse(localStorage.getItem('gm_counts')||'{}'); }
+function saveCounts(c){ localStorage.setItem('gm_counts', JSON.stringify(c)); }
+function incCount(key){
+  const c = loadCounts(); c[key] = (c[key]||0) + 1; saveCounts(c); renderCounts();
+}
+function renderCounts(){
+  const c = loadCounts();
+  document.getElementById('plays_garam').innerText = c.garam || 0;
+  document.getElementById('plays_emoji').innerText = c.emoji || 0;
+}
+renderCounts();
+
+/* increment on click (allows the link to open naturally) */
+document.getElementById('linkGar').addEventListener('click', ()=> incCount('garam'));
+document.getElementById('linkEmoji').addEventListener('click', ()=> incCount('emoji'));
+
+/* share hub */
+document.getElementById('shareHub').addEventListener('click', ()=>{
+  const url = location.href;
+  const text = 'Play Deepak\'s family games: Garam Masala and Andaz Apna Apna — Emoji Edition';
+  if(navigator.share) navigator.share({title:'Deepak Game Arcade', text, url}).catch(()=>navigator.clipboard?.writeText(url).then(()=>alert('Link copied')));
+  else navigator.clipboard?.writeText(url).then(()=>alert('Link copied to clipboard!'));
+});
+
+/* reset stats */
+document.getElementById('resetCounts').addEventListener('click', ()=>{
+  if(confirm('Reset local play counts?')){ localStorage.removeItem('gm_counts'); renderCounts(); }
+});
+
+/* PWA: deferred install prompt */
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('addHome').style.display='inline-block'; });
+document.getElementById('addHome').addEventListener('click', async ()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); const choice = await deferredPrompt.userChoice; deferredPrompt = null; }
+  else alert('Use browser menu → Add to Home Screen');
+});
+
+/* optionally register service worker (if you add service-worker.js at repo root) */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/service-worker.js').catch(()=>{/* ignore */});
+}
+</script>
+</body>
+</html>
